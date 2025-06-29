@@ -1,0 +1,4 @@
+BOT_TOKEN = "7581279174:AAF6B-FsA8-V94Thpg57W0OY314ancvNlPA"
+
+DB_PATH = "sausages.db"
+IMAGE_FOLDER = "images"

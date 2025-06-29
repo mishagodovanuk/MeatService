@@ -48,11 +48,10 @@ def create_tables():
     # Кошик користувача
     cur.execute("""
     CREATE TABLE IF NOT EXISTS cart (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        telegram_user_id INTEGER NOT NULL,
-        sausage_id INTEGER NOT NULL,
+        user_id INTEGER,
+        sausage_id INTEGER,
         quantity INTEGER DEFAULT 1,
-        added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (user_id, sausage_id),
         FOREIGN KEY (sausage_id) REFERENCES sausages(id)
     )
     """)

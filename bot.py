@@ -159,6 +159,8 @@ async def add_to_cart_callback(query: types.CallbackQuery):
 @dp.message(F.reply_to_message)
 async def reply_handler(message: types.Message):
     user_id = message.from_user.id
+    username = message.from_user.username or message.from_user.full_name
+    tg_link = f"https://t.me/{message.from_user.username}" if message.from_user.username else "немає посилання"
 
     if user_id in pending_cart_qty:
         try:
@@ -174,15 +176,31 @@ async def reply_handler(message: types.Message):
         await message.reply("✅ Товар додано до кошика. Перевірте /cart")
 
     elif pending_orders.pop(user_id, None):
-        phone = message.text.strip()
+        customer_info = message.text.strip()
         items = get_cart(user_id)
         if not items:
             await message.reply("❌ Ваш кошик порожній. Додайте товари перед замовленням.")
             return
+
+        # Зберігаємо замовлення
         for item in items:
-            place_order(user_id, item[0], item[3], phone)
+            place_order(user_id, item[0], item[3], customer_info)
         clear_cart(user_id)
+
+        # Підтвердження користувачу
         await message.reply("✅ Замовлення оформлено. Ми з вами звʼяжемось! 📞")
+
+        # Повідомлення менеджеру
+        text = "📥 <b>Нове замовлення</b>\n"
+        text += f"<b>Від:</b> {username}\n"
+        text += f"<b>Контакт:</b> {tg_link}\n"
+        text += f"<b>Дані:</b> {customer_info}\n"
+        text += "\n<b>🧺 Товари:</b>"
+
+        for item in items:
+            text += f"\n— <b>{item[1]}</b>: {item[3]} шт"
+
+        await bot.send_message(chat_id=713238306, text=text)
 
 
 if __name__ == "__main__":
